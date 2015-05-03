@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ff272f32"
+    tools:actionBarNavMode="list">
+    <TextView
+        android:text="Do Something!"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_height="118.1dp"
+        android:id="@+id/textView1"
+        android:layout_marginBottom="53.9dp"
+        android:gravity="left"
+        android:textScaleX="1"
+        android:layout_marginTop="100dp"
+        android:textColor="#ffdaeaef"
+        android:layout_width="276.1dp"
+        android:layout_marginLeft="45dp"
+        android:textSize="@android:dimen/app_icon_size"
+        android:textStyle="bold" />
+    <Button
+        android:text="Log In"
+        android:layout_height="wrap_content"
+        android:id="@+id/LoginButton"
+        android:gravity="center"
+        android:layout_marginLeft="45sp"
+        android:layout_width="300dp"
+        android:background="#fedaeaef"
+        android:textColor="#ffff3d2e" />
+</LinearLayout>
