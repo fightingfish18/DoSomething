@@ -17,6 +17,7 @@ import android.content.*;
 
 
 
+
 public class MainActivity extends ActionBarActivity {
     private MobileServiceClient client;
     private MobileServiceUser user;
@@ -46,7 +47,8 @@ public class MainActivity extends ActionBarActivity {
              @Override
              public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
                 user = mobileServiceUser;
-                //Toast.makeText(MainActivity.this, user.getAuthenticationToken(), Toast.LENGTH_LONG).show();
+                setContentView(R.layout.activity_map);
+                Toast.makeText(MainActivity.this, "Successfully Signed in", Toast.LENGTH_LONG).show();
              }
         });
     }
