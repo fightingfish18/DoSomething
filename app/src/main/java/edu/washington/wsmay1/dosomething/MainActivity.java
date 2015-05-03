@@ -46,17 +46,17 @@ public class MainActivity extends ActionBarActivity {
         client.login(MobileServiceAuthenticationProvider.Facebook, new UserAuthenticationCallback() {
              @Override
              public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
-                user = mobileServiceUser;
-                setContentView(R.layout.activity_map);
-                Toast.makeText(MainActivity.this, "Successfully Signed in", Toast.LENGTH_LONG).show();
+                 if (e == null) {
+                     user = mobileServiceUser;
+                     Toast.makeText(MainActivity.this, "Successfully Signed in", Toast.LENGTH_LONG).show();
+                     Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+                     startActivity(intent);
+                 } else {
+                     Toast.makeText(MainActivity.this, "Try Signing in Again", Toast.LENGTH_LONG).show();
+                 }
              }
         });
     }
-
-
-    //private void loggedIn() {
-
-    //}
 
 
     @Override
