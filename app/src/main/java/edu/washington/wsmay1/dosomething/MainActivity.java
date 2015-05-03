@@ -19,6 +19,8 @@ import android.content.*;
 
 public class MainActivity extends ActionBarActivity {
     private MobileServiceClient client;
+    private MobileServiceUser user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,19 +36,20 @@ public class MainActivity extends ActionBarActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //authenticate();
+                authenticate();
             }
         });
     }
-/*
+
     private void authenticate() {
-        user = client.login(MobileServiceAuthenticationProvider.Facebook, new Callable<MobileServiceUser>() {
-            @Override
-            public MobileServiceUser call() {
-                return user;
-            }
+        client.login(MobileServiceAuthenticationProvider.Facebook, new UserAuthenticationCallback() {
+             @Override
+             public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
+                user = mobileServiceUser;
+                //Toast.makeText(MainActivity.this, user.getAuthenticationToken(), Toast.LENGTH_LONG).show();
+             }
         });
-    } */
+    }
 
 
     //private void loggedIn() {
