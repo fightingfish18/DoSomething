@@ -2,6 +2,7 @@ package edu.washington.wsmay1.dosomething;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import com.google.android.gms.location.*;
 
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
+
 
 
 public class MapActivity extends ActionBarActivity {
@@ -21,6 +23,9 @@ public class MapActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        ActionBar actionBar = getActionBar();
+        actionBar.show();
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
