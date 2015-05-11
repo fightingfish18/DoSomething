@@ -1,5 +1,6 @@
 package edu.washington.wsmay1.dosomething;
 
+import android.app.AlertDialog;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button login = (Button) findViewById(R.id.LoginButton);
+
         try {
             client = new MobileServiceClient("https://dosomething.azure-mobile.net/", "SIZclmUxUGubaEXCuEXKkKjDlPxBfK77", this);
             Toast.makeText(this, "Client Created", Toast.LENGTH_LONG).show();
@@ -40,17 +42,89 @@ public class MainActivity extends ActionBarActivity {
                 authenticate();
             }
         });
+
+        //TODO : move to somewhere else
+        alertFormElements();
     }
 
     private void authenticate() {
         client.login(MobileServiceAuthenticationProvider.Facebook, new UserAuthenticationCallback() {
-             @Override
-             public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
+            @Override
+            public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
                 user = mobileServiceUser;
                 setContentView(R.layout.activity_map);
                 Toast.makeText(MainActivity.this, "Successfully Signed in", Toast.LENGTH_LONG).show();
-             }
+            }
         });
+    }
+
+    /*
+     * Show AlertDialog with some form elements.
+     * TODO : move somewhere else
+     */
+    public void alertFormElements() {
+
+    /*
+     * Inflate the XML view. activity_main is in
+     * res/layout/form_elements.xml
+     */
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View formElementsView = inflater.inflate(R.layout.form_elements,
+                null, false);
+
+        // You have to list down your form elements
+        final CheckBox myCheckBox = (CheckBox) formElementsView
+                .findViewById(R.id.myCheckBox);
+
+        final RadioGroup genderRadioGroup = (RadioGroup) formElementsView
+                .findViewById(R.id.genderRadioGroup);
+
+        final EditText nameEditText = (EditText) formElementsView
+                .findViewById(R.id.nameEditText);
+
+        // the alert dialog
+        AlertDialog ok = new AlertDialog.Builder(MainActivity.this).setView(formElementsView)
+                .setTitle("Form Elements")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        String toastString = "";
+
+                    /*
+                     * Detecting whether the checkbox is checked or not.
+                     */
+                        if (myCheckBox.isChecked()) {
+                            toastString += "Happy is checked!\n";
+                        } else {
+                            toastString += "Happy IS NOT checked.\n";
+                        }
+
+                    /*
+                     * Getting the value of selected RadioButton.
+                     */
+                        // get selected radio button from radioGroup
+                        int selectedId = genderRadioGroup
+                                .getCheckedRadioButtonId();
+
+                        // find the radiobutton by returned id
+                        RadioButton selectedRadioButton = (RadioButton) formElementsView
+                                .findViewById(selectedId);
+
+                        toastString += "Selected radio button is: "
+                                + selectedRadioButton.getText() + "!\n";
+
+                    /*
+                     * Getting the value of an EditText.
+                     */
+                        toastString += "Name is: " + nameEditText.getText()
+                                + "!\n";
+
+//                        showToast(toastString);
+
+                        dialog.cancel();
+                    }
+
+                }).show();
     }
 
 
