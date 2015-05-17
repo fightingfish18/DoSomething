@@ -4,4 +4,15 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_map">MapActivity</string>
+
+    <string-array name="categories">
+        <item>Athletics</item>
+        <item>Rioting</item>
+        <item>Academics</item>
+        <item>Social</item>
+        <item>Entertainment</item>
+        <item>Activism</item>
+        <item>Party</item>
+    </string-array>
+
 </resources>

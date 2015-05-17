@@ -2,49 +2,72 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <CheckBox
-        android:id="@+id/myCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="Happy?" />
-
-    <RadioGroup
-        android:id="@+id/genderRadioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/myCheckBox" >
-
-
-        <RadioButton
-            android:id="@+id/maleRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Male" />
-
-
-        <RadioButton
-            android:id="@+id/femaleRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/maleRadioButton"
-            android:text="Female" />
-
-    </RadioGroup>
-
     <EditText
         android:id="@+id/nameEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/genderRadioGroup"
         android:ems="10"
-        android:hint="Type your name here..." >
+        android:hint="Event Name..."
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp">
 
         <requestFocus />
     </EditText>
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/category_spinner"
+        android:spinnerMode="dropdown"
+        android:entries="@array/categories"
+        android:layout_below="@+id/nameEditText"
+        android:layout_alignLeft="@+id/nameEditText"
+        android:layout_alignStart="@+id/nameEditText"
+        android:layout_alignRight="@+id/nameEditText"
+        android:layout_alignEnd="@+id/nameEditText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="New Event"
+        android:id="@+id/newEventTitle"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="time"
+        android:hint="Time..."
+        android:ems="10"
+        android:id="@+id/editText"
+        android:layout_below="@+id/category_spinner"
+        android:layout_alignLeft="@+id/category_spinner"
+        android:layout_alignStart="@+id/category_spinner" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:hint="Date..."
+        android:ems="10"
+        android:id="@+id/editText2"
+        android:layout_below="@+id/editText"
+        android:layout_alignLeft="@+id/editText"
+        android:layout_alignStart="@+id/editText" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:hint="Description..."
+        android:ems="10"
+        android:id="@+id/editText3"
+        android:layout_below="@+id/editText2"
+        android:layout_alignLeft="@+id/editText2"
+        android:layout_alignStart="@+id/editText2" />
+
 
 </RelativeLayout>

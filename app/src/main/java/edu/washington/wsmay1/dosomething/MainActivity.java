@@ -64,6 +64,8 @@ public class MainActivity extends ActionBarActivity {
      */
     public void alertFormElements() {
 
+        event e = new event{ id="1", name="sample"  };
+        client.getPush();
     /*
      * Inflate the XML view. activity_main is in
      * res/layout/form_elements.xml
@@ -73,60 +75,28 @@ public class MainActivity extends ActionBarActivity {
                 null, false);
 
         // You have to list down your form elements
-        final CheckBox myCheckBox = (CheckBox) formElementsView
-                .findViewById(R.id.myCheckBox);
-
-        final RadioGroup genderRadioGroup = (RadioGroup) formElementsView
-                .findViewById(R.id.genderRadioGroup);
-
+        final Spinner categorySpinner = (Spinner) formElementsView
+                .findViewById(R.id.category_spinner);
         final EditText nameEditText = (EditText) formElementsView
                 .findViewById(R.id.nameEditText);
+
+
 
         // the alert dialog
         AlertDialog ok = new AlertDialog.Builder(MainActivity.this).setView(formElementsView)
                 .setTitle("Form Elements")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                    String toastString = "";
+                    // Getting the value of an EditText
+                    toastString += "Name is: " + nameEditText.getText() + "!\n";
+                    // showToast(toastString);
 
-                        String toastString = "";
 
-                    /*
-                     * Detecting whether the checkbox is checked or not.
-                     */
-                        if (myCheckBox.isChecked()) {
-                            toastString += "Happy is checked!\n";
-                        } else {
-                            toastString += "Happy IS NOT checked.\n";
-                        }
-
-                    /*
-                     * Getting the value of selected RadioButton.
-                     */
-                        // get selected radio button from radioGroup
-                        int selectedId = genderRadioGroup
-                                .getCheckedRadioButtonId();
-
-                        // find the radiobutton by returned id
-                        RadioButton selectedRadioButton = (RadioButton) formElementsView
-                                .findViewById(selectedId);
-
-                        toastString += "Selected radio button is: "
-                                + selectedRadioButton.getText() + "!\n";
-
-                    /*
-                     * Getting the value of an EditText.
-                     */
-                        toastString += "Name is: " + nameEditText.getText()
-                                + "!\n";
-
-//                        showToast(toastString);
-
-                        dialog.cancel();
-                    }
-
-                }).show();
+                    dialog.cancel();
+                }
+        }).show();
     }
-
 
     //private void loggedIn() {
 
