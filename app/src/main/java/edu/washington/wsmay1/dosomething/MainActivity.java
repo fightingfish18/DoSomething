@@ -64,8 +64,7 @@ public class MainActivity extends ActionBarActivity {
      */
     public void alertFormElements() {
 
-        event e = new event{ id="1", name="sample"  };
-        client.getPush();
+
     /*
      * Inflate the XML view. activity_main is in
      * res/layout/form_elements.xml
@@ -75,25 +74,53 @@ public class MainActivity extends ActionBarActivity {
                 null, false);
 
         // You have to list down your form elements
-        final Spinner categorySpinner = (Spinner) formElementsView
-                .findViewById(R.id.category_spinner);
         final EditText nameEditText = (EditText) formElementsView
                 .findViewById(R.id.nameEditText);
+        final Spinner categorySpinner = (Spinner) formElementsView
+                .findViewById(R.id.category_spinner);
+        final EditText eventTime = (EditText) formElementsView
+                .findViewById(R.id.eventTime);
+        final EditText eventDate = (EditText) formElementsView
+                .findViewById(R.id.eventDate);
+        final EditText eventDescription = (EditText) formElementsView
+                .findViewById(R.id.eventDescription);
 
 
 
         // the alert dialog
+        // On press of OK button, the form is submitted
         AlertDialog ok = new AlertDialog.Builder(MainActivity.this).setView(formElementsView)
                 .setTitle("Form Elements")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                    String toastString = "";
-                    // Getting the value of an EditText
-                    toastString += "Name is: " + nameEditText.getText() + "!\n";
-                    // showToast(toastString);
 
+                        // Get values from form
+                        Event event =  new Event();
+                        event.name = nameEditText.getText().toString().trim();
+                        event.author = "henry";
+                        event.date = eventDate.getText().toString().trim();
+                        event.time = eventTime.getText().toString().trim();
+                        event.description = eventDescription.getText().toString().trim();
 
-                    dialog.cancel();
+                        client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
+                            @Override
+                            public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
+                                if (e1 == null){
+                                    //success
+                                    Toast.makeText(MainActivity.this, "success", Toast.LENGTH_LONG).show();
+
+                                } else {
+                                    //failure
+                                    Toast.makeText(MainActivity.this, "fail-"+e1.getCause(), Toast.LENGTH_LONG).show();
+
+                                }
+                            }
+                        });
+
+                         Toast.makeText(MainActivity.this, "submitted event "+nameEditText.getText()
+                                 .toString().trim(), Toast.LENGTH_LONG).show();
+
+                        dialog.cancel();
                 }
         }).show();
     }

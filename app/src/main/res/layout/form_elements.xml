@@ -42,7 +42,7 @@
         android:inputType="time"
         android:hint="Time..."
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/eventTime"
         android:layout_below="@+id/category_spinner"
         android:layout_alignLeft="@+id/category_spinner"
         android:layout_alignStart="@+id/category_spinner" />
@@ -53,10 +53,10 @@
         android:inputType="date"
         android:hint="Date..."
         android:ems="10"
-        android:id="@+id/editText2"
-        android:layout_below="@+id/editText"
-        android:layout_alignLeft="@+id/editText"
-        android:layout_alignStart="@+id/editText" />
+        android:id="@+id/eventDate"
+        android:layout_below="@+id/eventTime"
+        android:layout_alignLeft="@+id/eventTime"
+        android:layout_alignStart="@+id/eventTime" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -64,10 +64,10 @@
         android:inputType="textMultiLine"
         android:hint="Description..."
         android:ems="10"
-        android:id="@+id/editText3"
-        android:layout_below="@+id/editText2"
-        android:layout_alignLeft="@+id/editText2"
-        android:layout_alignStart="@+id/editText2" />
+        android:id="@+id/eventDescription"
+        android:layout_below="@+id/eventDate"
+        android:layout_alignLeft="@+id/eventDate"
+        android:layout_alignStart="@+id/eventDate" />
 
 
 </RelativeLayout>
