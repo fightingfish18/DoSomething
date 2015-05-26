@@ -32,8 +32,8 @@ public class MapActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.show();
+        //ActionBar actionBar = getActionBar();
+        //actionBar.show();
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
