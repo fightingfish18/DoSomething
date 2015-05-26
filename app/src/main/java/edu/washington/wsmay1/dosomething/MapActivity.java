@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import com.google.android.gms.location.*;
-
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
@@ -45,7 +44,7 @@ public class MapActivity extends ActionBarActivity {
             }
         });
 
-        //mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //long time = 5;
         //float distance = 10;
         //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, mLocationListener);
@@ -53,20 +52,26 @@ public class MapActivity extends ActionBarActivity {
     }
 
     public void loadMap(GoogleMap map) {
-        LatLng sydney = new LatLng(-33.867, 151.206);
+        this.map = map;
         map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location != null) {
+            LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
+        }
+        long time = 5;
+        float distance = 10;
+        //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, this.mLocationListener);
+        //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, mLocationListener);
 
-        map.addMarker(new MarkerOptions()
-                .title("Sydney")
-                .snippet("The most populous city in Australia.")
-                .position(sydney));
     }
 
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
         public void onLocationChanged(final Location location) {
             current = location;
+            LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
         }
     };
 
