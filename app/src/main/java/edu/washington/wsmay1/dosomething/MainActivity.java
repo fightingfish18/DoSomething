@@ -22,13 +22,14 @@ import android.content.*;
 public class MainActivity extends ActionBarActivity {
     private MobileServiceClient client;
     private MobileServiceUser user;
+    private NewApp myApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myApp = (NewApp) getApplication();
         Button login = (Button) findViewById(R.id.LoginButton);
-
         try {
             client = new MobileServiceClient("https://dosomething.azure-mobile.net/", "SIZclmUxUGubaEXCuEXKkKjDlPxBfK77", this);
             Toast.makeText(this, "Client Created", Toast.LENGTH_LONG).show();
@@ -43,18 +44,18 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        //TODO : move to somewhere else
-        alertFormElements();
+
     }
 
     private void authenticate() {
         client.login(MobileServiceAuthenticationProvider.Facebook, new UserAuthenticationCallback() {
-
              @Override
              public void onCompleted(MobileServiceUser mobileServiceUser, Exception e, ServiceFilterResponse serviceFilterResponse) {
                  if (e == null) {
                      user = mobileServiceUser;
                      Toast.makeText(MainActivity.this, "Successfully Signed in", Toast.LENGTH_LONG).show();
+                     client.setCurrentUser(user);
+                     myApp.setClient(client);
                      Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                      startActivity(intent);
                  } else {
@@ -63,73 +64,6 @@ public class MainActivity extends ActionBarActivity {
              }
 
         });
-    }
-
-    /*
-     * Show AlertDialog with some form elements.
-     * TODO : move somewhere else
-     */
-    public void alertFormElements() {
-
-
-    /*
-     * Inflate the XML view. activity_main is in
-     * res/layout/form_elements.xml
-     */
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View formElementsView = inflater.inflate(R.layout.form_elements,
-                null, false);
-
-        // You have to list down your form elements
-        final EditText nameEditText = (EditText) formElementsView
-                .findViewById(R.id.nameEditText);
-        final Spinner categorySpinner = (Spinner) formElementsView
-                .findViewById(R.id.category_spinner);
-        final EditText eventTime = (EditText) formElementsView
-                .findViewById(R.id.eventTime);
-        final EditText eventDate = (EditText) formElementsView
-                .findViewById(R.id.eventDate);
-        final EditText eventDescription = (EditText) formElementsView
-                .findViewById(R.id.eventDescription);
-
-
-
-        // the alert dialog
-        // On press of OK button, the form is submitted
-        AlertDialog ok = new AlertDialog.Builder(MainActivity.this).setView(formElementsView)
-                .setTitle("Form Elements")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        // Get values from form
-                        Event event =  new Event();
-                        event.name = nameEditText.getText().toString().trim();
-                        event.author = "henry";
-                        event.date = eventDate.getText().toString().trim();
-                        event.time = eventTime.getText().toString().trim();
-                        event.description = eventDescription.getText().toString().trim();
-
-                        client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
-                            @Override
-                            public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
-                                if (e1 == null){
-                                    //success
-                                    Toast.makeText(MainActivity.this, "success", Toast.LENGTH_LONG).show();
-
-                                } else {
-                                    //failure
-                                    Toast.makeText(MainActivity.this, "fail-"+e1.getCause(), Toast.LENGTH_LONG).show();
-
-                                }
-                            }
-                        });
-
-                         Toast.makeText(MainActivity.this, "submitted event "+nameEditText.getText()
-                                 .toString().trim(), Toast.LENGTH_LONG).show();
-
-                        dialog.cancel();
-                }
-        }).show();
     }
 
     @Override
