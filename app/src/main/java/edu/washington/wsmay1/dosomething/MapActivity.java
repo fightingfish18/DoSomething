@@ -1,14 +1,17 @@
 package edu.washington.wsmay1.dosomething;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,9 +19,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.*;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
@@ -36,6 +45,14 @@ public class MapActivity extends ActionBarActivity {
     private MobileServiceClient client;
     private MobileServiceUser user;
     private NewApp myApp;
+
+    //Used for event form
+    private static final int PLACE_PICKER_REQUEST = 1;
+    private TextView mName;
+    private TextView mAddress;
+    private TextView mAttributions;
+    private static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
+            new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
 
     final Context context = this;
 
@@ -102,6 +119,7 @@ public class MapActivity extends ActionBarActivity {
 
 
     public void alertFormElements() {
+
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View formElementsView = inflater.inflate(R.layout.form_elements,
                 null, false);
@@ -118,6 +136,25 @@ public class MapActivity extends ActionBarActivity {
         final EditText eventDescription = (EditText) formElementsView
                 .findViewById(R.id.eventDescription);
 
+        final Button pickerButton = (Button) formElementsView
+                .findViewById(R.id.pickerButton);
+        pickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    PlacePicker.IntentBuilder intentBuilder =
+                            new PlacePicker.IntentBuilder();
+                    intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
+                    Intent intent = intentBuilder.build(getApplicationContext());
+//                    String[] accountTypes = new String[]{"com.google"};
+//                    Intent intent = AccountPicker.newChooseAccountIntent(null, null,
+//                            accountTypes, false, null, null, null, null);
+                    startActivityForResult(intent, PLACE_PICKER_REQUEST);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(formElementsView)
                 .setTitle("Form Elements")
@@ -126,7 +163,7 @@ public class MapActivity extends ActionBarActivity {
                         // Get values from form
                         Event event =  new Event();
                         event.name = nameEditText.getText().toString().trim();
-                        event.author = "henry";
+                        event.author = user.getUserId().trim();
                         event.date = eventDate.getText().toString().trim();
                         event.time = eventTime.getText().toString().trim();
                         event.description = eventDescription.getText().toString().trim();
@@ -152,6 +189,30 @@ public class MapActivity extends ActionBarActivity {
                         dialog.cancel();
                     }
                 }).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+
+        if (requestCode == PLACE_PICKER_REQUEST
+                && resultCode == Activity.RESULT_OK) {
+
+            final Place place = PlacePicker.getPlace(data, this);
+            final CharSequence name = place.getName();
+            final CharSequence address = place.getAddress();
+            String attributions = PlacePicker.getAttributions(data);
+            if (attributions == null) {
+                attributions = "";
+            }
+
+            mName.setText(name);
+            mAddress.setText(address);
+            mAttributions.setText(Html.fromHtml(attributions));
+
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }

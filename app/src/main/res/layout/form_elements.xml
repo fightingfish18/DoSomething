@@ -69,5 +69,14 @@
         android:layout_alignLeft="@+id/eventDate"
         android:layout_alignStart="@+id/eventDate" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick Location"
+        android:id="@+id/pickerButton"
+        android:layout_below="@+id/eventDescription"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"/>
+
 
 </RelativeLayout>
