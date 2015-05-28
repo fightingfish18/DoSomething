@@ -10,5 +10,7 @@ public class Event {
     public String date;
     public String description;
     public String author;
+    public String lat;
+    public String lng;
 
 }

@@ -69,6 +69,8 @@
         android:layout_alignLeft="@+id/eventDate"
         android:layout_alignStart="@+id/eventDate" />
 
+
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,6 +79,28 @@
         android:layout_below="@+id/eventDescription"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:hint="Latitude..."
+        android:id="@+id/eventLat"
+        android:layout_below="@+id/pickerButton"
+        android:layout_alignRight="@+id/eventDescription"
+        android:layout_alignEnd="@+id/eventDescription" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:hint="Longitude..."
+        android:id="@+id/eventLng"
+        android:layout_below="@+id/eventLat"
+        android:layout_alignLeft="@+id/eventLat"
+        android:layout_alignStart="@+id/eventLat" />
 
 
 </RelativeLayout>

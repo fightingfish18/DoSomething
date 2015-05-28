@@ -135,6 +135,11 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById(R.id.eventDate);
         final EditText eventDescription = (EditText) formElementsView
                 .findViewById(R.id.eventDescription);
+        final EditText eventLat = (EditText) formElementsView
+                .findViewById(R.id.eventLat);
+        final EditText eventLng = (EditText) formElementsView
+                .findViewById(R.id.eventLng);
+
 
         final Button pickerButton = (Button) formElementsView
                 .findViewById(R.id.pickerButton);
@@ -167,6 +172,8 @@ public class MapActivity extends ActionBarActivity {
                         event.date = eventDate.getText().toString().trim();
                         event.time = eventTime.getText().toString().trim();
                         event.description = eventDescription.getText().toString().trim();
+                        event.lat = eventLat.getText().toString().trim();
+                        event.lng = eventLng.getText().toString().trim();
 
                         client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
                             @Override
