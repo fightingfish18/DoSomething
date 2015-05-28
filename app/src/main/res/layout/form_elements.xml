@@ -27,15 +27,6 @@
         android:layout_alignRight="@+id/nameEditText"
         android:layout_alignEnd="@+id/nameEditText" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="New Event"
-        android:id="@+id/newEventTitle"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

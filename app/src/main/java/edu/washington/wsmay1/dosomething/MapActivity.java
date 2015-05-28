@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,11 +33,17 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
+import com.microsoft.windowsazure.mobileservices.MobileServiceJsonTable;
+import com.microsoft.windowsazure.mobileservices.MobileServiceQuery;
+import com.microsoft.windowsazure.mobileservices.MobileServiceTable;
 import com.microsoft.windowsazure.mobileservices.MobileServiceUser;
 import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
+import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MapActivity extends ActionBarActivity {
@@ -63,6 +71,7 @@ public class MapActivity extends ActionBarActivity {
         myApp = (NewApp)getApplication();
         client = myApp.getClient();
         user = client.getCurrentUser();
+
         Button eventButton = (Button) findViewById(R.id.newEvent);
         eventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +79,15 @@ public class MapActivity extends ActionBarActivity {
                 alertFormElements();
             }
         });
+
+        Button eventLoadButton = (Button) findViewById(R.id.loadEvents);
+        eventLoadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertLoadEvents();
+            }
+        });
+
         //ActionBar actionBar = getActionBar();
         //actionBar.show();
 
@@ -117,6 +135,72 @@ public class MapActivity extends ActionBarActivity {
         }
     };
 
+    public void alertLoadEvents() {
+        LayoutInflater loadinflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View loadElementsView = loadinflater.inflate(R.layout.load_elements,
+                null, false);
+
+        final ListView listViewToDo = (ListView) loadElementsView
+                .findViewById(R.id.listViewEvent);
+        final EditText editText = (EditText) loadElementsView
+                .findViewById(R.id.editText);
+
+        // Get the Mobile Service Table instance to use
+//        final MobileServiceTable<Event> eventTable = client.getTable(Event.class);
+//        List<Event> eventList = new ArrayList<Event>();
+
+        // Create an adapter to bind the items with the view
+        EventAdapter eAdapter = new EventAdapter(this, R.layout.load_elements);
+        listViewToDo.setAdapter(eAdapter);
+        // Load the items from the Mobile Service
+        refreshEventsFromTable();
+
+
+        //Refresh the list with the items in the Mobile Service Table
+        private void refreshEventsFromTable() {
+            // Get the items that weren't marked as completed and add them in the adapter
+            new AsyncTask<Void, Void, Void>() {
+
+                @Override
+                protected Void doInBackground(Void... params) {
+                    try {
+                        final List<Event> result = result.get();
+                        runOnUiThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                mAdapter.clear();
+
+                                for (ToDoItem item : result) {
+                                    mAdapter.add(item);
+                                }
+                            }
+                        });
+                    } catch (Exception exception) {
+                        createAndShowDialog(exception, "Error");
+                    }
+                    return null;
+                }
+            }.execute();
+        }
+
+
+        editText.setText("this");
+
+        AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(loadElementsView)
+                .setTitle("Saved Events")
+                .setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Toast.makeText(MapActivity.this, "load", Toast.LENGTH_LONG).show();
+
+                        dialog.cancel();
+                    }
+                }).show();
+
+
+    }
+
 
     public void alertFormElements() {
 
@@ -162,8 +246,8 @@ public class MapActivity extends ActionBarActivity {
         });
 
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(formElementsView)
-                .setTitle("Form Elements")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle("New Event")
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Get values from form
                         Event event =  new Event();
