@@ -13,10 +13,12 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -55,10 +57,14 @@ public class MapActivity extends ActionBarActivity {
     private NewApp myApp;
 
     //Used for event form
-    private static final int PLACE_PICKER_REQUEST = 1;
+    private EventAdapter eventAdapter;
+    private ArrayList<Event> events = new ArrayList<Event>();
+    private MobileServiceTable<Event> eTable;
     private TextView mName;
     private TextView mAddress;
     private TextView mAttributions;
+
+    private static final int PLACE_PICKER_REQUEST = 1;
     private static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
             new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
 
@@ -104,6 +110,8 @@ public class MapActivity extends ActionBarActivity {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
 
+        loadEvents(); //Gets events from backend and adds them to events list
+
         //alertFormElements();
         //long time = 5;
         //float distance = 10;
@@ -139,53 +147,18 @@ public class MapActivity extends ActionBarActivity {
         LayoutInflater loadinflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View loadElementsView = loadinflater.inflate(R.layout.load_elements,
                 null, false);
-
-        final ListView listViewToDo = (ListView) loadElementsView
+        final ListView listViewEvent = (ListView) loadElementsView
                 .findViewById(R.id.listViewEvent);
-        final EditText editText = (EditText) loadElementsView
-                .findViewById(R.id.editText);
 
-        // Get the Mobile Service Table instance to use
-//        final MobileServiceTable<Event> eventTable = client.getTable(Event.class);
-//        List<Event> eventList = new ArrayList<Event>();
-
-        // Create an adapter to bind the items with the view
-        EventAdapter eAdapter = new EventAdapter(this, R.layout.load_elements);
-        listViewToDo.setAdapter(eAdapter);
         // Load the items from the Mobile Service
-        refreshEventsFromTable();
+        loadEvents();
+        //Toast.makeText(MapActivity.this, "loaded-"+events.size(), Toast.LENGTH_LONG).show();
 
+        // Create The Adapter with passing ArrayList as 3rd parameter
+        EventAdapter arrayAdapter =
+                new EventAdapter(MapActivity.this,0,events);
+        listViewEvent.setAdapter(arrayAdapter);
 
-        //Refresh the list with the items in the Mobile Service Table
-        private void refreshEventsFromTable() {
-            // Get the items that weren't marked as completed and add them in the adapter
-            new AsyncTask<Void, Void, Void>() {
-
-                @Override
-                protected Void doInBackground(Void... params) {
-                    try {
-                        final List<Event> result = result.get();
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                mAdapter.clear();
-
-                                for (ToDoItem item : result) {
-                                    mAdapter.add(item);
-                                }
-                            }
-                        });
-                    } catch (Exception exception) {
-                        createAndShowDialog(exception, "Error");
-                    }
-                    return null;
-                }
-            }.execute();
-        }
-
-
-        editText.setText("this");
 
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(loadElementsView)
                 .setTitle("Saved Events")
@@ -200,6 +173,30 @@ public class MapActivity extends ActionBarActivity {
 
 
     }
+
+
+    //Refresh the list with the items in the Mobile Service Table
+    public void loadEvents(){
+        // Get the Mobile Service Table instance to use
+        eTable = client.getTable(Event.class);
+        eTable.execute(new TableQueryCallback<Event>() {
+            @Override
+            public void onCompleted(List<Event> list, int i, Exception e, ServiceFilterResponse serviceFilterResponse) {
+                if (e == null) {
+                    //success
+                    events.clear();
+                    for (Event event : list) {
+                        events.add(event);
+                    }
+                    Toast.makeText(MapActivity.this, "loaded - "+events.size()+" events", Toast.LENGTH_LONG).show();
+                } else {
+                    //failure
+                    Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+    };
 
 
     public void alertFormElements() {
