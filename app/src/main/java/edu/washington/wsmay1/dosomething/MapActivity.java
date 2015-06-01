@@ -78,6 +78,7 @@ public class MapActivity extends ActionBarActivity {
         client = myApp.getClient();
         user = client.getCurrentUser();
 
+        //placeholder button for creating a new event
         Button eventButton = (Button) findViewById(R.id.newEvent);
         eventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +87,7 @@ public class MapActivity extends ActionBarActivity {
             }
         });
 
+        //placeholder button for loading list of evente
         Button eventLoadButton = (Button) findViewById(R.id.loadEvents);
         eventLoadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +145,7 @@ public class MapActivity extends ActionBarActivity {
         }
     };
 
+    //creates alert dialog with list of all current events
     public void alertLoadEvents() {
         LayoutInflater loadinflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View loadElementsView = loadinflater.inflate(R.layout.load_elements,
@@ -176,6 +179,7 @@ public class MapActivity extends ActionBarActivity {
 
 
     //Refresh the list with the items in the Mobile Service Table
+    //gets all the events and loads them to the events arraylist
     public void loadEvents(){
         // Get the Mobile Service Table instance to use
         eTable = client.getTable(Event.class);
@@ -199,6 +203,7 @@ public class MapActivity extends ActionBarActivity {
     };
 
 
+    //Creates a alert dialog with the form elements for creating a new event
     public void alertFormElements() {
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
