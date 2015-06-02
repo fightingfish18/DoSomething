@@ -111,9 +111,6 @@ public class MapActivity extends ActionBarActivity {
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-
-        loadEvents(); //Gets events from backend and adds them to events list
-
         //alertFormElements();
         //long time = 5;
         //float distance = 10;
@@ -129,6 +126,7 @@ public class MapActivity extends ActionBarActivity {
             LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
         }
+        loadEvents(); //Gets events from backend and adds them to events list
         long time = 5;
         float distance = 10;
         //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, this.mLocationListener);
@@ -192,7 +190,17 @@ public class MapActivity extends ActionBarActivity {
                     for (Event event : list) {
                         events.add(event);
                     }
-                    Toast.makeText(MapActivity.this, "loaded - "+events.size()+" events", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapActivity.this, "loaded - " + events.size() + " events", Toast.LENGTH_LONG).show();
+                    if (map != null) {
+                        for (Event event : events) {
+                            /*map.addMarker(new MarkerOptions().position(
+                                    new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
+                            ).title("Event"));*/
+                            Log.e("event", event.getName());
+                            Log.e("eventLat", event.getLat());
+                            Log.e("eventLng", event.getLng());
+                        }
+                    }
                 } else {
                     //failure
                     Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
@@ -253,13 +261,13 @@ public class MapActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         // Get values from form
                         Event event =  new Event();
-                        event.name = nameEditText.getText().toString().trim();
-                        event.author = user.getUserId().trim();
-                        event.date = eventDate.getText().toString().trim();
-                        event.time = eventTime.getText().toString().trim();
-                        event.description = eventDescription.getText().toString().trim();
-                        event.lat = eventLat.getText().toString().trim();
-                        event.lng = eventLng.getText().toString().trim();
+                        event.setName(nameEditText.getText().toString().trim());
+                        event.setAuthor(user.getUserId().trim());
+                        event.setDate(eventDate.getText().toString().trim());
+                        event.setTime(eventTime.getText().toString().trim());
+                        event.setDescription(eventDescription.getText().toString().trim());
+                        event.setLat(eventLat.getText().toString().trim());
+                        event.setLng(eventLng.getText().toString().trim());
 
                         client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
                             @Override
@@ -267,6 +275,7 @@ public class MapActivity extends ActionBarActivity {
                                 if (e1 == null){
                                     //success
                                     Toast.makeText(MapActivity.this, "success", Toast.LENGTH_LONG).show();
+                                    loadEvents(); //Gets events from backend and adds them to events list
 
                                 } else {
                                     //failure
