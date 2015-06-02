@@ -33,7 +33,11 @@
         android:hint="Description..."
         android:layout_below="@+id/pickerButton"
         android:ems="10"
-        android:id="@+id/eventDescription" />
+        android:id="@+id/eventDescription"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
 
@@ -42,7 +46,11 @@
         android:layout_height="wrap_content"
         android:text="Pick Location"
         android:id="@+id/pickerButton"
-        android:layout_below="@+id/event_time"/>
+        android:layout_below="@+id/event_time"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -51,7 +59,11 @@
         android:ems="10"
         android:hint="Latitude..."
         android:layout_below="@+id/eventLng"
-        android:id="@+id/eventLat" />
+        android:id="@+id/eventLat"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -60,19 +72,25 @@
         android:ems="10"
         android:hint="Longitude..."
         android:layout_below="@+id/eventDescription"
-        android:id="@+id/eventLng" />
-
-    <DatePicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/category_spinner"
-        android:id="@+id/event_calender" />
+        android:id="@+id/eventLng"
+        android:layout_alignRight="@+id/eventDescription"
+        android:layout_alignEnd="@+id/eventDescription"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TimePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/event_calender"
+        android:layout_centerHorizontal="true"
         android:id="@+id/event_time" />
+
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/event_calender"
+        android:layout_above="@+id/event_time"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
 </ScrollView>

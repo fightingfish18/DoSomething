@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.PowerManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -325,5 +326,6 @@ public class MapActivity extends ActionBarActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 
 }
