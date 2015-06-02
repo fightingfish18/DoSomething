@@ -193,12 +193,11 @@ public class MapActivity extends ActionBarActivity {
                     Toast.makeText(MapActivity.this, "loaded - " + events.size() + " events", Toast.LENGTH_LONG).show();
                     if (map != null) {
                         for (Event event : events) {
-                            /*map.addMarker(new MarkerOptions().position(
-                                    new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
-                            ).title("Event"));*/
-                            Log.e("event", event.getName());
-                            Log.e("eventLat", event.getLat());
-                            Log.e("eventLng", event.getLng());
+                            if (event.getLat().length() > 3 && event.getLng().length() > 3) {
+                                map.addMarker(new MarkerOptions().position(
+                                        new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
+                                ).title(event.getName()).snippet("an event in DoSomething"));
+                            }
                         }
                     }
                 } else {

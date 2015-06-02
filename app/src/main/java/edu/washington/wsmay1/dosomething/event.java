@@ -57,8 +57,9 @@ public class Event {
     }
 
     public String getLng() {
-        return id;
+        return lng;
     }
+
     public final void setLng(String newlng) {
         lng = newlng;
     }
