@@ -20,10 +20,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.common.AccountPicker;
@@ -66,7 +69,7 @@ public class MapActivity extends ActionBarActivity {
 
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
-            new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
+            new LatLng(47.5, -122.5), new LatLng(47.7, -122.3));
 
     final Context context = this;
 
@@ -215,16 +218,20 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById(R.id.nameEditText);
         final Spinner categorySpinner = (Spinner) formElementsView
                 .findViewById(R.id.category_spinner);
-        final EditText eventTime = (EditText) formElementsView
-                .findViewById(R.id.eventTime);
-        final EditText eventDate = (EditText) formElementsView
-                .findViewById(R.id.eventDate);
+//        final EditText eventTime = (EditText) formElementsView
+//               .findViewById(R.id.eventTime);
+//        final EditText eventDate = (EditText) formElementsView
+//                .findViewById(R.id.eventDate);
         final EditText eventDescription = (EditText) formElementsView
                 .findViewById(R.id.eventDescription);
         final EditText eventLat = (EditText) formElementsView
                 .findViewById(R.id.eventLat);
         final EditText eventLng = (EditText) formElementsView
                 .findViewById(R.id.eventLng);
+        final DatePicker eventCalendar = (DatePicker) formElementsView
+                .findViewById((R.id.event_calender));
+        final TimePicker eventTime = (TimePicker) formElementsView
+                .findViewById(R.id.event_time);
 
 
         final Button pickerButton = (Button) formElementsView
@@ -237,7 +244,7 @@ public class MapActivity extends ActionBarActivity {
                             new PlacePicker.IntentBuilder();
                     intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
                     Intent intent = intentBuilder.build(getApplicationContext());
-//                    String[] accountTypes = new String[]{"com.google"};
+//                    String[] accountTypes = new String[]{"com.facebook"};
 //                    Intent intent = AccountPicker.newChooseAccountIntent(null, null,
 //                            accountTypes, false, null, null, null, null);
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
@@ -252,36 +259,47 @@ public class MapActivity extends ActionBarActivity {
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Get values from form
-                        Event event =  new Event();
+                        Event event = new Event();
                         event.name = nameEditText.getText().toString().trim();
                         event.author = user.getUserId().trim();
-                        event.date = eventDate.getText().toString().trim();
-                        event.time = eventTime.getText().toString().trim();
+//                        event.date = eventDate.getText().toString().trim();
+//                        event.time = eventTime.getText().toString().trim();
+                        event.date = eventCalendar.getMonth()+"/"+eventCalendar.getDayOfMonth()+"/"+eventCalendar.getYear();
+                        event.time = eventTime.getCurrentHour()+":"+eventTime.getCurrentMinute();
                         event.description = eventDescription.getText().toString().trim();
                         event.lat = eventLat.getText().toString().trim();
                         event.lng = eventLng.getText().toString().trim();
 
-                        client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
-                            @Override
-                            public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
-                                if (e1 == null){
-                                    //success
-                                    Toast.makeText(MapActivity.this, "success", Toast.LENGTH_LONG).show();
+                        if (!event.name.isEmpty() && !event.date.isEmpty() && !event.lat.isEmpty() && !event.lng.isEmpty()) {
+                            if (-90 <= Integer.parseInt(event.lat) && Integer.parseInt(event.lat) <= 90 && -180 <= Integer.parseInt(event.lng) && Integer.parseInt(event.lng) <= 180) {
+                                client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
+                                    @Override
+                                    public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
+                                        if (e1 == null) {
+                                            //success
+                                            Toast.makeText(MapActivity.this, "success", Toast.LENGTH_LONG).show();
 
-                                } else {
-                                    //failure
-                                    Toast.makeText(MapActivity.this, "fail-"+e1.getCause(), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            //failure
+                                            Toast.makeText(MapActivity.this, "fail-" + e1.getCause(), Toast.LENGTH_LONG).show();
 
-                                }
+                                        }
+                                    }
+                                });
+
+                                Toast.makeText(MapActivity.this, "submitted event " + nameEditText.getText()
+                                        .toString().trim(), Toast.LENGTH_LONG).show();
+
+                                dialog.cancel();
+                            } else {
+                                Toast.makeText(MapActivity.this, "must choose valid lat/lng", Toast.LENGTH_LONG).show();
                             }
-                        });
-
-                        Toast.makeText(MapActivity.this, "submitted event "+ nameEditText.getText()
-                                .toString().trim(), Toast.LENGTH_LONG).show();
-
-                        dialog.cancel();
+                        } else {
+                            Toast.makeText(MapActivity.this, "1 or more empty fields", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }).show();
+        loadEvents();
     }
 
     @Override
