@@ -115,9 +115,6 @@ public class MapActivity extends ActionBarActivity {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         loadEvents();
-        LatLng test = getLocationFromAddress("1800 NE 47th Street Seattle, WA 98105");
-        Toast.makeText(this, test.toString(), Toast.LENGTH_LONG).show();
-        
     }
 
     public void loadMap(GoogleMap map) {
@@ -153,6 +150,35 @@ public class MapActivity extends ActionBarActivity {
                 date.setText(items[2]);
                 TextView author = (TextView) v.findViewById(R.id.author);
                 author.setText(items[1]);
+                Button rsvp = (Button) v.findViewById(R.id.rsvp);
+                final String id = items[3];
+                TextView attending = (TextView) v.findViewById(R.id.attending);
+                attending.setText(items[4]);
+                rsvp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for (int i = 0; i < events.size(); i++) {
+                            if (events.get(i).getId().equals(id)) {
+                                int attendance = events.get(i).getAttending();
+                                attendance++;
+                                events.get(i).setAttending(attendance);
+                                client.getTable(Event.class).insert(events.get(i), new TableOperationCallback<Event>() {
+                                    @Override
+                                    public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
+                                        if (e1 == null) {
+                                            //success
+                                            loadEvents();
+                                        } else {
+                                            //failure
+                                            Toast.makeText(MapActivity.this, "failed to save event -" + e1.getCause(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                                break;
+                            }
+                        }
+                    }
+                });
 
                 // Returning the view containing InfoWindow contents
                 return v;
@@ -261,55 +287,55 @@ public class MapActivity extends ActionBarActivity {
         if (category.equals("athletics")) {
             map.addMarker(new MarkerOptions().position(
                     new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                        .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                        .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.sport))
             );
         } else if (category.equals("academics")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.book))
             );
         } else if (category.equals("social")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.network))
             );
         } else if (category.equals("night-life")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.moon))
             );
         } else if (category.equals("gaming")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.game))
             );
         } else if (category.equals("entertainment")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.tele))
             );
         } else if (category.equals("activism")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.mega))
             );
         } else if (category.equals("party")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.balloon))
             );
         } else if (category.equals("other")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate() + "|" + event.getId() + "| No. Attending: " + event.getAttending())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.rsz_ban))
             );
         }

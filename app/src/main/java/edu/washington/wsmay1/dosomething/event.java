@@ -1,5 +1,7 @@
 package edu.washington.wsmay1.dosomething;
 
+import java.util.ArrayList;
+
 /**
  * Created by Henry on 5/16/2015.
  */
@@ -14,6 +16,11 @@ public class Event {
     private String lat;
     private String lng;
     private String host;
+    private int attending;
+
+    public Event() {
+        this.attending = 0;
+    }
 
     public String getHost() {
         if (this.host != null) {
@@ -22,6 +29,14 @@ public class Event {
             return this.author;
         }
 
+    }
+
+    public int getAttending() {
+        return this.attending;
+    }
+
+    public void setAttending(int attending) {
+        this.attending = attending;
     }
 
     public void setHost(String host) {
