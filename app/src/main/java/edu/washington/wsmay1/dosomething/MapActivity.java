@@ -7,6 +7,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -15,21 +17,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CalendarView;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
-
+import android.view.*;
+import android.widget.*;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -47,6 +36,7 @@ import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
 import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +44,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.regex.Pattern;
+
 
 
 public class MapActivity extends ActionBarActivity {
@@ -122,12 +115,9 @@ public class MapActivity extends ActionBarActivity {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         loadEvents();
-
-        //alertFormElements();
-        //long time = 5;
-        //float distance = 10;
-        //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, mLocationListener);
-        //mLocationManager.request
+        LatLng test = getLocationFromAddress("1800 NE 47th Street Seattle, WA 98105");
+        Toast.makeText(this, test.toString(), Toast.LENGTH_LONG).show();
+        
     }
 
     public void loadMap(GoogleMap map) {
@@ -138,6 +128,38 @@ public class MapActivity extends ActionBarActivity {
             LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
         }
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            // Defines the contents of the InfoWindow
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                // Getting view from the layout file info_window_layout
+                View v = getLayoutInflater().inflate(R.layout.info_window, null);
+
+                // Getting reference to the TextView to set title
+                TextView title = (TextView) v.findViewById(R.id.title);
+                title.setText(marker.getTitle());
+                String[] items = marker.getSnippet().split(Pattern.quote("|"));
+                TextView desc = (TextView) v.findViewById(R.id.description);
+                desc.setText(items[0]);
+                TextView date = (TextView) v.findViewById(R.id.date);
+                date.setText(items[2]);
+                TextView author = (TextView) v.findViewById(R.id.author);
+                author.setText(items[1]);
+
+                // Returning the view containing InfoWindow contents
+                return v;
+
+            }
+
+        });
         loadEvents(); //Gets events from backend and adds them to events list
         long time = 5;
         float distance = 10;
@@ -208,7 +230,6 @@ public class MapActivity extends ActionBarActivity {
                             if (event.getAuthor().equals(user.getUserId())) {
                                 myEvents.add(event);
                             }
-
                             try {
                                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                                 Date date = formatter.parse(event.getDate());
@@ -237,60 +258,73 @@ public class MapActivity extends ActionBarActivity {
     public void addMarker(Event event) {
         final String category = event.getCategory().toLowerCase().trim();
         Log.w("category======", category);
-        if(category.equals("athletics")) {
+        if (category.equals("athletics")) {
             map.addMarker(new MarkerOptions().position(
-                new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                    .title(event.getName()).snippet(event.getDescription())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sport))
+                    new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                        .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.sport))
             );
-        } else if(category.equals("academics")){
+        } else if (category.equals("academics")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.book))
             );
-        } else if(category.equals("social")){
+        } else if (category.equals("social")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.network))
             );
-        }else if(category.equals("night-life")){
+        } else if (category.equals("night-life")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.moon))
             );
-        }else if(category.equals("gaming")){
+        } else if (category.equals("gaming")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.game))
             );
-        }else if(category.equals("entertainment")){
+        } else if (category.equals("entertainment")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.tele))
             );
-        }else if(category.equals("activism")){
+        } else if (category.equals("activism")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.mega))
             );
-        }else if(category.equals("party")){
+        } else if (category.equals("party")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.balloon))
             );
-        }else if(category.equals("other")){
+        } else if (category.equals("other")) {
             map.addMarker(new MarkerOptions().position(
                             new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
-                            .title(event.getName()).snippet(event.getDescription())
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ban))
+                            .title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.rsz_ban))
             );
+        }
+    }
+
+    public LatLng getLocationFromAddress(String strAddress) {
+        List<Address> addresses;
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocationName(strAddress, 1);
+            return new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+        } catch (Exception e) {
+            Toast.makeText(this, "Please enter a valid address", Toast.LENGTH_LONG).show();
+            return null;
         }
     }
 
@@ -306,41 +340,14 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById(R.id.nameEditText);
         final Spinner categorySpinner = (Spinner) formElementsView
                 .findViewById(R.id.category_spinner);
-//        final EditText eventTime = (EditText) formElementsView
-//               .findViewById(R.id.eventTime);
-//        final EditText eventDate = (EditText) formElementsView
-//                .findViewById(R.id.eventDate);
         final EditText eventDescription = (EditText) formElementsView
                 .findViewById(R.id.eventDescription);
-        final EditText eventLat = (EditText) formElementsView
-                .findViewById(R.id.eventLat);
-        final EditText eventLng = (EditText) formElementsView
-                .findViewById(R.id.eventLng);
         final DatePicker eventCalendar = (DatePicker) formElementsView
                 .findViewById((R.id.event_calender));
         final TimePicker eventTime = (TimePicker) formElementsView
                 .findViewById(R.id.event_time);
-
-
-        final Button pickerButton = (Button) formElementsView
-                .findViewById(R.id.pickerButton);
-        pickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    PlacePicker.IntentBuilder intentBuilder =
-                            new PlacePicker.IntentBuilder();
-                    intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
-                    Intent intent = intentBuilder.build(getApplicationContext());
-//                    String[] accountTypes = new String[]{"com.facebook"};
-//                    Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-//                            accountTypes, false, null, null, null, null);
-                    startActivityForResult(intent, PLACE_PICKER_REQUEST);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        final EditText hostName = (EditText) formElementsView.findViewById(R.id.hostName);
+        final EditText address = (EditText) formElementsView.findViewById(R.id.address);
 
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(formElementsView)
                 .setTitle("New Event")
@@ -351,13 +358,13 @@ public class MapActivity extends ActionBarActivity {
                         event.setName(nameEditText.getText().toString().trim());
                         event.setAuthor(user.getUserId().trim());
                         event.setCategory(categorySpinner.getSelectedItem().toString());
-//                        event.date = eventDate.getText().toString().trim();
-//                        event.time = eventTime.getText().toString().trim();
                         event.setDate(eventCalendar.getMonth() + "/" + eventCalendar.getDayOfMonth() + "/" + eventCalendar.getYear());
                         event.setTime(eventTime.getCurrentHour() + ":" + eventTime.getCurrentMinute());
                         event.setDescription(eventDescription.getText().toString().trim());
-                        event.setLat(eventLat.getText().toString().trim());
-                        event.setLng(eventLng.getText().toString().trim());
+                        event.setHost(hostName.getText().toString().trim());
+                        LatLng location = getLocationFromAddress(address.getText().toString().trim());
+                        event.setLat("" + location.latitude);
+                        event.setLng("" + location.longitude);
 
                         if (!event.getName().isEmpty()) {
                             if (-90 <= Double.parseDouble(event.getLat()) && Double.parseDouble(event.getLat()) <= 90 && -180 <= Double.parseDouble(event.getLng()) && Double.parseDouble(event.getLng()) <= 180) {
@@ -385,30 +392,6 @@ public class MapActivity extends ActionBarActivity {
                     }
                 }).show();
         loadEvents();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode,
-                                    int resultCode, Intent data) {
-
-        if (requestCode == PLACE_PICKER_REQUEST
-                && resultCode == Activity.RESULT_OK) {
-
-            final Place place = PlacePicker.getPlace(data, this);
-            final CharSequence name = place.getName();
-            final CharSequence address = place.getAddress();
-            String attributions = PlacePicker.getAttributions(data);
-            if (attributions == null) {
-                attributions = "";
-            }
-
-            mName.setText(name);
-            mAddress.setText(address);
-            mAttributions.setText(Html.fromHtml(attributions));
-
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
 

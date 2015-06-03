@@ -13,7 +13,20 @@ public class Event {
     private String author;
     private String lat;
     private String lng;
+    private String host;
 
+    public String getHost() {
+        if (this.host != null) {
+            return this.host;
+        } else {
+            return this.author;
+        }
+
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 
     public String getId() {
         return id;
@@ -39,9 +52,8 @@ public class Event {
         time = newtime;
     }
 
-    public String getDate() {
-        return date;
-    }
+    public String getDate() {return this.date;}
+
     public final void setDate(String newdate) {
         date = newdate;
     }
