@@ -115,9 +115,6 @@ public class MapActivity extends ActionBarActivity {
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-
-        loadEvents(); //Gets events from backend and adds them to events list
-
         //alertFormElements();
         //long time = 5;
         //float distance = 10;
@@ -133,6 +130,7 @@ public class MapActivity extends ActionBarActivity {
             LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
         }
+        loadEvents(); //Gets events from backend and adds them to events list
         long time = 5;
         float distance = 10;
         //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, this.mLocationListener);
@@ -196,7 +194,16 @@ public class MapActivity extends ActionBarActivity {
                     for (Event event : list) {
                         events.add(event);
                     }
-                    Toast.makeText(MapActivity.this, "loaded - "+events.size()+" events", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapActivity.this, "loaded - " + events.size() + " events", Toast.LENGTH_LONG).show();
+                    if (map != null) {
+                        for (Event event : events) {
+                            if (event.getLat().length() > 3 && event.getLng().length() > 3) {
+                                map.addMarker(new MarkerOptions().position(
+                                        new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
+                                ).title(event.getName()).snippet("an event in DoSomething"));
+                            }
+                        }
+                    }
                 } else {
                     //failure
                     Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
@@ -261,18 +268,18 @@ public class MapActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         // Get values from form
                         Event event = new Event();
-                        event.name = nameEditText.getText().toString().trim();
-                        event.author = user.getUserId().trim();
+                        event.setName(nameEditText.getText().toString().trim());
+                        event.setAuthor(user.getUserId().trim());
 //                        event.date = eventDate.getText().toString().trim();
 //                        event.time = eventTime.getText().toString().trim();
-                        event.date = eventCalendar.getMonth()+"/"+eventCalendar.getDayOfMonth()+"/"+eventCalendar.getYear();
-                        event.time = eventTime.getCurrentHour()+":"+eventTime.getCurrentMinute();
-                        event.description = eventDescription.getText().toString().trim();
-                        event.lat = eventLat.getText().toString().trim();
-                        event.lng = eventLng.getText().toString().trim();
+                        event.setDate(eventCalendar.getMonth() + "/" + eventCalendar.getDayOfMonth() + "/" + eventCalendar.getYear());
+                        event.setTime(eventTime.getCurrentHour() + ":" + eventTime.getCurrentMinute());
+                        event.setDescription(eventDescription.getText().toString().trim());
+                        event.setLat(eventLat.getText().toString().trim());
+                        event.setLng(eventLng.getText().toString().trim());
 
-                        if (!event.name.isEmpty() && !event.date.isEmpty() && !event.lat.isEmpty() && !event.lng.isEmpty()) {
-                            if (-90 <= Integer.parseInt(event.lat) && Integer.parseInt(event.lat) <= 90 && -180 <= Integer.parseInt(event.lng) && Integer.parseInt(event.lng) <= 180) {
+                        if (!event.getName().isEmpty()) {
+                            if (-90 <= Double.parseDouble(event.getLat()) && Double.parseDouble(event.getLat()) <= 90 && -180 <= Double.parseDouble(event.getLng()) && Double.parseDouble(event.getLng()) <= 180) {
                                 client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
                                     @Override
                                     public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {

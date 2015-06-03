@@ -4,14 +4,14 @@ package edu.washington.wsmay1.dosomething;
  * Created by Henry on 5/16/2015.
  */
 public class Event {
-    public String id;
-    public String name;
-    public String time;
-    public String date;
-    public String description;
-    public String author;
-    public String lat;
-    public String lng;
+    private String id;
+    private String name;
+    private String time;
+    private String date;
+    private String description;
+    private String author;
+    private String lat;
+    private String lng;
 
 
     public String getId() {
@@ -57,10 +57,20 @@ public class Event {
     }
 
     public String getLng() {
-        return id;
+        return lng;
     }
+
     public final void setLng(String newlng) {
         lng = newlng;
     }
+
+    public final void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public final void setDate(String date) {
+        this.date = date;
+    }
+
 
 }
