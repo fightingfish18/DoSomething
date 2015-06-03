@@ -6,6 +6,7 @@ package edu.washington.wsmay1.dosomething;
 public class Event {
     private String id;
     private String name;
+    private String category;
     private String time;
     private String date;
     private String description;
@@ -20,6 +21,11 @@ public class Event {
     public final void setId(String newid) {
         id = newid;
     }
+
+    public String getCategory() {
+        return category;
+    }
+    public final void setCategory(String newCategory) {category = newCategory; }
 
     public String getName() {
         return name;
@@ -67,6 +73,7 @@ public class Event {
     public final void setAuthor(String author) {
         this.author = author;
     }
+    public String getAuthor() { return author; }
 
     public final void setDate(String date) {
         this.date = date;

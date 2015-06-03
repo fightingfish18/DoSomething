@@ -1,19 +1,20 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
+
 
     <EditText
         android:id="@+id/nameEditText"
-        android:layout_width="wrap_content"
+        android:layout_width="397dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Event Name..."
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp">
-
-        <requestFocus />
-    </EditText>
+        android:layout_marginTop="50dp" />
 
     <Spinner
         android:layout_width="wrap_content"
@@ -22,43 +23,21 @@
         android:spinnerMode="dropdown"
         android:entries="@array/categories"
         android:layout_below="@+id/nameEditText"
-        android:layout_alignLeft="@+id/nameEditText"
-        android:layout_alignStart="@+id/nameEditText"
-        android:layout_alignRight="@+id/nameEditText"
-        android:layout_alignEnd="@+id/nameEditText" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="time"
-        android:hint="Time..."
-        android:ems="10"
-        android:id="@+id/eventTime"
-        android:layout_below="@+id/category_spinner"
-        android:layout_alignLeft="@+id/category_spinner"
-        android:layout_alignStart="@+id/category_spinner" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="date"
-        android:hint="Date..."
-        android:ems="10"
-        android:id="@+id/eventDate"
-        android:layout_below="@+id/eventTime"
-        android:layout_alignLeft="@+id/eventTime"
-        android:layout_alignStart="@+id/eventTime" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:hint="Description..."
+        android:layout_below="@+id/pickerButton"
         android:ems="10"
         android:id="@+id/eventDescription"
-        android:layout_below="@+id/eventDate"
-        android:layout_alignLeft="@+id/eventDate"
-        android:layout_alignStart="@+id/eventDate" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
 
@@ -67,9 +46,11 @@
         android:layout_height="wrap_content"
         android:text="Pick Location"
         android:id="@+id/pickerButton"
-        android:layout_below="@+id/eventDescription"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"/>
+        android:layout_below="@+id/event_time"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -77,10 +58,12 @@
         android:inputType="numberDecimal|numberSigned"
         android:ems="10"
         android:hint="Latitude..."
+        android:layout_below="@+id/eventLng"
         android:id="@+id/eventLat"
-        android:layout_below="@+id/pickerButton"
-        android:layout_alignRight="@+id/eventDescription"
-        android:layout_alignEnd="@+id/eventDescription" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -88,10 +71,26 @@
         android:inputType="numberDecimal|numberSigned"
         android:ems="10"
         android:hint="Longitude..."
+        android:layout_below="@+id/eventDescription"
         android:id="@+id/eventLng"
-        android:layout_below="@+id/eventLat"
-        android:layout_alignLeft="@+id/eventLat"
-        android:layout_alignStart="@+id/eventLat" />
+        android:layout_alignRight="@+id/eventDescription"
+        android:layout_alignEnd="@+id/eventDescription"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_calender"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/event_time" />
+
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/event_calender"
+        android:layout_below="@+id/category_spinner"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
+</ScrollView>

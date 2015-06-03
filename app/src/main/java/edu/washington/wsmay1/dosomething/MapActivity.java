@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.PowerManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -20,10 +21,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CalendarView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.common.AccountPicker;
@@ -46,6 +50,7 @@ import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class MapActivity extends ActionBarActivity {
@@ -59,6 +64,7 @@ public class MapActivity extends ActionBarActivity {
     //Used for event form
     private EventAdapter eventAdapter;
     private ArrayList<Event> events = new ArrayList<Event>();
+    private ArrayList<Event> myEvents = new ArrayList<Event>();
     private MobileServiceTable<Event> eTable;
     private TextView mName;
     private TextView mAddress;
@@ -66,7 +72,7 @@ public class MapActivity extends ActionBarActivity {
 
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final LatLngBounds BOUNDS_MOUNTAIN_VIEW = new LatLngBounds(
-            new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
+            new LatLng(47.5, -122.5), new LatLng(47.7, -122.3));
 
     final Context context = this;
 
@@ -111,6 +117,8 @@ public class MapActivity extends ActionBarActivity {
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        loadEvents();
+
         //alertFormElements();
         //long time = 5;
         //float distance = 10;
@@ -139,7 +147,7 @@ public class MapActivity extends ActionBarActivity {
         public void onLocationChanged(final Location location) {
             current = location;
             LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 11));
         }
     };
 
@@ -153,7 +161,9 @@ public class MapActivity extends ActionBarActivity {
 
         // Load the items from the Mobile Service
         loadEvents();
-        //Toast.makeText(MapActivity.this, "loaded-"+events.size(), Toast.LENGTH_LONG).show();
+
+        Log.w("=====================", "my events ->" + myEvents.size());
+        Log.w("=====================", "All events ->" + events.size());
 
         // Create The Adapter with passing ArrayList as 3rd parameter
         EventAdapter arrayAdapter =
@@ -165,9 +175,6 @@ public class MapActivity extends ActionBarActivity {
                 .setTitle("Saved Events")
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
-                        Toast.makeText(MapActivity.this, "load", Toast.LENGTH_LONG).show();
-
                         dialog.cancel();
                     }
                 }).show();
@@ -187,16 +194,19 @@ public class MapActivity extends ActionBarActivity {
                 if (e == null) {
                     //success
                     events.clear();
+                    myEvents.clear();
                     for (Event event : list) {
                         events.add(event);
                     }
-                    Toast.makeText(MapActivity.this, "loaded - " + events.size() + " events", Toast.LENGTH_LONG).show();
                     if (map != null) {
                         for (Event event : events) {
+                            if (event.getAuthor().equals(user.getUserId())) {
+                                myEvents.add(event);
+                            }
                             if (event.getLat().length() > 3 && event.getLng().length() > 3) {
                                 map.addMarker(new MarkerOptions().position(
                                         new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
-                                ).title(event.getName()).snippet("an event in DoSomething"));
+                                ).title(event.getName()).snippet(event.getDescription()));
                             }
                         }
                     }
@@ -209,6 +219,27 @@ public class MapActivity extends ActionBarActivity {
 
     };
 
+//    public void  loadMyEvents() {
+//        myEvents.clear();
+//        // Get the Mobile Service Table instance to use
+//        eTable = client.getTable(Event.class);
+//        eTable.execute(new TableQueryCallback<Event>() {
+//            @Override
+//            public void onCompleted(List<Event> list, int i, Exception e, ServiceFilterResponse serviceFilterResponse) {
+//                if (e == null) {
+//                    //success
+//                    for (Event event : list) {
+//                        if (event.getAuthor().equals(user.getUserId())) {
+//                            myEvents.add(event);
+//                        }
+//                    }
+//                } else {
+//                    //failure
+//                    Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
+//    };
 
     //Creates a alert dialog with the form elements for creating a new event
     public void alertFormElements() {
@@ -222,16 +253,20 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById(R.id.nameEditText);
         final Spinner categorySpinner = (Spinner) formElementsView
                 .findViewById(R.id.category_spinner);
-        final EditText eventTime = (EditText) formElementsView
-                .findViewById(R.id.eventTime);
-        final EditText eventDate = (EditText) formElementsView
-                .findViewById(R.id.eventDate);
+//        final EditText eventTime = (EditText) formElementsView
+//               .findViewById(R.id.eventTime);
+//        final EditText eventDate = (EditText) formElementsView
+//                .findViewById(R.id.eventDate);
         final EditText eventDescription = (EditText) formElementsView
                 .findViewById(R.id.eventDescription);
         final EditText eventLat = (EditText) formElementsView
                 .findViewById(R.id.eventLat);
         final EditText eventLng = (EditText) formElementsView
                 .findViewById(R.id.eventLng);
+        final DatePicker eventCalendar = (DatePicker) formElementsView
+                .findViewById((R.id.event_calender));
+        final TimePicker eventTime = (TimePicker) formElementsView
+                .findViewById(R.id.event_time);
 
 
         final Button pickerButton = (Button) formElementsView
@@ -244,7 +279,7 @@ public class MapActivity extends ActionBarActivity {
                             new PlacePicker.IntentBuilder();
                     intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
                     Intent intent = intentBuilder.build(getApplicationContext());
-//                    String[] accountTypes = new String[]{"com.google"};
+//                    String[] accountTypes = new String[]{"com.facebook"};
 //                    Intent intent = AccountPicker.newChooseAccountIntent(null, null,
 //                            accountTypes, false, null, null, null, null);
                     startActivityForResult(intent, PLACE_PICKER_REQUEST);
@@ -259,37 +294,43 @@ public class MapActivity extends ActionBarActivity {
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Get values from form
-                        Event event =  new Event();
+                        Event event = new Event();
                         event.setName(nameEditText.getText().toString().trim());
                         event.setAuthor(user.getUserId().trim());
-                        event.setDate(eventDate.getText().toString().trim());
-                        event.setTime(eventTime.getText().toString().trim());
+                        event.setCategory(categorySpinner.toString());
+//                        event.date = eventDate.getText().toString().trim();
+//                        event.time = eventTime.getText().toString().trim();
+                        event.setDate(eventCalendar.getMonth() + "/" + eventCalendar.getDayOfMonth() + "/" + eventCalendar.getYear());
+                        event.setTime(eventTime.getCurrentHour() + ":" + eventTime.getCurrentMinute());
                         event.setDescription(eventDescription.getText().toString().trim());
                         event.setLat(eventLat.getText().toString().trim());
                         event.setLng(eventLng.getText().toString().trim());
 
-                        client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
-                            @Override
-                            public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
-                                if (e1 == null){
-                                    //success
-                                    Toast.makeText(MapActivity.this, "success", Toast.LENGTH_LONG).show();
-                                    loadEvents(); //Gets events from backend and adds them to events list
-
-                                } else {
-                                    //failure
-                                    Toast.makeText(MapActivity.this, "fail-"+e1.getCause(), Toast.LENGTH_LONG).show();
-
-                                }
+                        if (!event.getName().isEmpty()) {
+                            if (-90 <= Double.parseDouble(event.getLat()) && Double.parseDouble(event.getLat()) <= 90 && -180 <= Double.parseDouble(event.getLng()) && Double.parseDouble(event.getLng()) <= 180) {
+                                client.getTable(Event.class).insert(event, new TableOperationCallback<Event>() {
+                                    @Override
+                                    public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
+                                        if (e1 == null) {
+                                            //success
+                                        } else {
+                                            //failure
+                                            Toast.makeText(MapActivity.this, "failed to save event -" + e1.getCause(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                                Toast.makeText(MapActivity.this, "submitted event " + nameEditText.getText()
+                                        .toString().trim(), Toast.LENGTH_LONG).show();
+                                dialog.cancel();
+                            } else {
+                                Toast.makeText(MapActivity.this, "must choose valid lat/lng", Toast.LENGTH_LONG).show();
                             }
-                        });
-
-                        Toast.makeText(MapActivity.this, "submitted event "+ nameEditText.getText()
-                                .toString().trim(), Toast.LENGTH_LONG).show();
-
-                        dialog.cancel();
+                        } else {
+                            Toast.makeText(MapActivity.this, "1 or more empty fields", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }).show();
+        loadEvents();
     }
 
     @Override
@@ -315,5 +356,6 @@ public class MapActivity extends ActionBarActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 
 }
