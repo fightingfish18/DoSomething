@@ -7,6 +7,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -34,6 +36,7 @@ import com.microsoft.windowsazure.mobileservices.ServiceFilterResponse;
 import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
 import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -104,12 +107,9 @@ public class MapActivity extends ActionBarActivity {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         loadEvents();
-
-        //alertFormElements();
-        //long time = 5;
-        //float distance = 10;
-        //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, mLocationListener);
-        //mLocationManager.request
+        LatLng test = getLocationFromAddress("1800 NE 47th Street Seattle, WA 98105");
+        Toast.makeText(this, test.toString(), Toast.LENGTH_LONG).show();
+        
     }
 
     public void loadMap(GoogleMap map) {
@@ -237,27 +237,18 @@ public class MapActivity extends ActionBarActivity {
 
     };
 
-//    public void  loadMyEvents() {
-//        myEvents.clear();
-//        // Get the Mobile Service Table instance to use
-//        eTable = client.getTable(Event.class);
-//        eTable.execute(new TableQueryCallback<Event>() {
-//            @Override
-//            public void onCompleted(List<Event> list, int i, Exception e, ServiceFilterResponse serviceFilterResponse) {
-//                if (e == null) {
-//                    //success
-//                    for (Event event : list) {
-//                        if (event.getAuthor().equals(user.getUserId())) {
-//                            myEvents.add(event);
-//                        }
-//                    }
-//                } else {
-//                    //failure
-//                    Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-//    };
+    public LatLng getLocationFromAddress(String strAddress) {
+        List<Address> addresses;
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocationName(strAddress, 1);
+            return new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+        } catch (Exception e) {
+            Toast.makeText(this, "Please enter a valid address", Toast.LENGTH_LONG).show();
+            return null;
+        }
+    }
 
     //Creates a alert dialog with the form elements for creating a new event
     public void alertFormElements() {
@@ -271,42 +262,14 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById(R.id.nameEditText);
         final Spinner categorySpinner = (Spinner) formElementsView
                 .findViewById(R.id.category_spinner);
-//        final EditText eventTime = (EditText) formElementsView
-//               .findViewById(R.id.eventTime);
-//        final EditText eventDate = (EditText) formElementsView
-//                .findViewById(R.id.eventDate);
         final EditText eventDescription = (EditText) formElementsView
                 .findViewById(R.id.eventDescription);
-        final EditText eventLat = (EditText) formElementsView
-                .findViewById(R.id.eventLat);
-        final EditText eventLng = (EditText) formElementsView
-                .findViewById(R.id.eventLng);
         final DatePicker eventCalendar = (DatePicker) formElementsView
                 .findViewById((R.id.event_calender));
         final TimePicker eventTime = (TimePicker) formElementsView
                 .findViewById(R.id.event_time);
         final EditText hostName = (EditText) formElementsView.findViewById(R.id.hostName);
-
-
-        final Button pickerButton = (Button) formElementsView
-                .findViewById(R.id.pickerButton);
-        pickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    PlacePicker.IntentBuilder intentBuilder =
-                            new PlacePicker.IntentBuilder();
-                    intentBuilder.setLatLngBounds(BOUNDS_MOUNTAIN_VIEW);
-                    Intent intent = intentBuilder.build(getApplicationContext());
-//                    String[] accountTypes = new String[]{"com.facebook"};
-//                    Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-//                            accountTypes, false, null, null, null, null);
-                    startActivityForResult(intent, PLACE_PICKER_REQUEST);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        final EditText address = (EditText) formElementsView.findViewById(R.id.address);
 
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(formElementsView)
                 .setTitle("New Event")
@@ -317,14 +280,13 @@ public class MapActivity extends ActionBarActivity {
                         event.setName(nameEditText.getText().toString().trim());
                         event.setAuthor(user.getUserId().trim());
                         event.setCategory(categorySpinner.toString());
-//                        event.date = eventDate.getText().toString().trim();
-//                        event.time = eventTime.getText().toString().trim();
                         event.setDate(eventCalendar.getMonth() + "/" + eventCalendar.getDayOfMonth() + "/" + eventCalendar.getYear());
                         event.setTime(eventTime.getCurrentHour() + ":" + eventTime.getCurrentMinute());
                         event.setDescription(eventDescription.getText().toString().trim());
-                        event.setLat(eventLat.getText().toString().trim());
-                        event.setLng(eventLng.getText().toString().trim());
                         event.setHost(hostName.getText().toString().trim());
+                        LatLng location = getLocationFromAddress(address.getText().toString().trim());
+                        event.setLat("" + location.latitude);
+                        event.setLng("" + location.longitude);
 
                         if (!event.getName().isEmpty()) {
                             if (-90 <= Double.parseDouble(event.getLat()) && Double.parseDouble(event.getLat()) <= 90 && -180 <= Double.parseDouble(event.getLng()) && Double.parseDouble(event.getLng()) <= 180) {
@@ -351,30 +313,6 @@ public class MapActivity extends ActionBarActivity {
                     }
                 }).show();
         loadEvents();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode,
-                                    int resultCode, Intent data) {
-
-        if (requestCode == PLACE_PICKER_REQUEST
-                && resultCode == Activity.RESULT_OK) {
-
-            final Place place = PlacePicker.getPlace(data, this);
-            final CharSequence name = place.getName();
-            final CharSequence address = place.getAddress();
-            String attributions = PlacePicker.getAttributions(data);
-            if (attributions == null) {
-                attributions = "";
-            }
-
-            mName.setText(name);
-            mAddress.setText(address);
-            mAttributions.setText(Html.fromHtml(attributions));
-
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
 
