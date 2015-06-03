@@ -50,6 +50,7 @@ import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class MapActivity extends ActionBarActivity {
@@ -63,6 +64,7 @@ public class MapActivity extends ActionBarActivity {
     //Used for event form
     private EventAdapter eventAdapter;
     private ArrayList<Event> events = new ArrayList<Event>();
+    private ArrayList<Event> myEvents = new ArrayList<Event>();
     private MobileServiceTable<Event> eTable;
     private TextView mName;
     private TextView mAddress;
@@ -115,6 +117,8 @@ public class MapActivity extends ActionBarActivity {
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        loadEvents();
+
         //alertFormElements();
         //long time = 5;
         //float distance = 10;
@@ -143,7 +147,7 @@ public class MapActivity extends ActionBarActivity {
         public void onLocationChanged(final Location location) {
             current = location;
             LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 11));
         }
     };
 
@@ -157,7 +161,9 @@ public class MapActivity extends ActionBarActivity {
 
         // Load the items from the Mobile Service
         loadEvents();
-        //Toast.makeText(MapActivity.this, "loaded-"+events.size(), Toast.LENGTH_LONG).show();
+
+        Log.w("=====================", "my events ->" + myEvents.size());
+        Log.w("=====================", "All events ->" + events.size());
 
         // Create The Adapter with passing ArrayList as 3rd parameter
         EventAdapter arrayAdapter =
@@ -169,9 +175,6 @@ public class MapActivity extends ActionBarActivity {
                 .setTitle("Saved Events")
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
-                        Toast.makeText(MapActivity.this, "load", Toast.LENGTH_LONG).show();
-
                         dialog.cancel();
                     }
                 }).show();
@@ -191,16 +194,19 @@ public class MapActivity extends ActionBarActivity {
                 if (e == null) {
                     //success
                     events.clear();
+                    myEvents.clear();
                     for (Event event : list) {
                         events.add(event);
                     }
-                    Toast.makeText(MapActivity.this, "loaded - " + events.size() + " events", Toast.LENGTH_LONG).show();
                     if (map != null) {
                         for (Event event : events) {
+                            if (event.getAuthor().equals(user.getUserId())) {
+                                myEvents.add(event);
+                            }
                             if (event.getLat().length() > 3 && event.getLng().length() > 3) {
                                 map.addMarker(new MarkerOptions().position(
                                         new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
-                                ).title(event.getName()).snippet("an event in DoSomething"));
+                                ).title(event.getName()).snippet(event.getDescription()));
                             }
                         }
                     }
@@ -213,6 +219,27 @@ public class MapActivity extends ActionBarActivity {
 
     };
 
+//    public void  loadMyEvents() {
+//        myEvents.clear();
+//        // Get the Mobile Service Table instance to use
+//        eTable = client.getTable(Event.class);
+//        eTable.execute(new TableQueryCallback<Event>() {
+//            @Override
+//            public void onCompleted(List<Event> list, int i, Exception e, ServiceFilterResponse serviceFilterResponse) {
+//                if (e == null) {
+//                    //success
+//                    for (Event event : list) {
+//                        if (event.getAuthor().equals(user.getUserId())) {
+//                            myEvents.add(event);
+//                        }
+//                    }
+//                } else {
+//                    //failure
+//                    Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
+//    };
 
     //Creates a alert dialog with the form elements for creating a new event
     public void alertFormElements() {
@@ -270,6 +297,7 @@ public class MapActivity extends ActionBarActivity {
                         Event event = new Event();
                         event.setName(nameEditText.getText().toString().trim());
                         event.setAuthor(user.getUserId().trim());
+                        event.setCategory(categorySpinner.toString());
 //                        event.date = eventDate.getText().toString().trim();
 //                        event.time = eventTime.getText().toString().trim();
                         event.setDate(eventCalendar.getMonth() + "/" + eventCalendar.getDayOfMonth() + "/" + eventCalendar.getYear());
@@ -285,19 +313,14 @@ public class MapActivity extends ActionBarActivity {
                                     public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
                                         if (e1 == null) {
                                             //success
-                                            Toast.makeText(MapActivity.this, "success", Toast.LENGTH_LONG).show();
-
                                         } else {
                                             //failure
-                                            Toast.makeText(MapActivity.this, "fail-" + e1.getCause(), Toast.LENGTH_LONG).show();
-
+                                            Toast.makeText(MapActivity.this, "failed to save event -" + e1.getCause(), Toast.LENGTH_LONG).show();
                                         }
                                     }
                                 });
-
                                 Toast.makeText(MapActivity.this, "submitted event " + nameEditText.getText()
                                         .toString().trim(), Toast.LENGTH_LONG).show();
-
                                 dialog.cancel();
                             } else {
                                 Toast.makeText(MapActivity.this, "must choose valid lat/lng", Toast.LENGTH_LONG).show();

@@ -7,12 +7,14 @@
 
     <string-array name="categories">
         <item>Athletics</item>
-        <item>Rioting</item>
         <item>Academics</item>
         <item>Social</item>
+        <item>Night-Life</item>
+        <item>Gaming</item>
         <item>Entertainment</item>
         <item>Activism</item>
         <item>Party</item>
+        <item>Other</item>
     </string-array>
 
 </resources>
