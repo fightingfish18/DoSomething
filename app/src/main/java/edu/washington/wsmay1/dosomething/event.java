@@ -22,9 +22,7 @@ public class Event {
         id = newid;
     }
 
-    public String getCategory() {
-        return category;
-    }
+    public String getCategory() {return category;}
     public final void setCategory(String newCategory) {category = newCategory; }
 
     public String getName() {
@@ -42,9 +40,9 @@ public class Event {
     }
 
     public String getDate() {
-        return id;
+        return date;
     }
-    public final void setdate(String newdate) {
+    public final void setDate(String newdate) {
         date = newdate;
     }
 
@@ -75,9 +73,6 @@ public class Event {
     }
     public String getAuthor() { return author; }
 
-    public final void setDate(String date) {
-        this.date = date;
-    }
 
 
 }

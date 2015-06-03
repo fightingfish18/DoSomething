@@ -48,7 +48,10 @@ import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
 import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -65,6 +68,7 @@ public class MapActivity extends ActionBarActivity {
     private EventAdapter eventAdapter;
     private ArrayList<Event> events = new ArrayList<Event>();
     private ArrayList<Event> myEvents = new ArrayList<Event>();
+    private ArrayList<Event> upcomingEvents = new ArrayList<Event>();
     private MobileServiceTable<Event> eTable;
     private TextView mName;
     private TextView mAddress;
@@ -160,19 +164,19 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById(R.id.listViewEvent);
 
         // Load the items from the Mobile Service
-        loadEvents();
+        //loadEvents();
 
         Log.w("=====================", "my events ->" + myEvents.size());
         Log.w("=====================", "All events ->" + events.size());
 
         // Create The Adapter with passing ArrayList as 3rd parameter
         EventAdapter arrayAdapter =
-                new EventAdapter(MapActivity.this,0,events);
+                new EventAdapter(MapActivity.this,0,upcomingEvents);
         listViewEvent.setAdapter(arrayAdapter);
 
 
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(loadElementsView)
-                .setTitle("Saved Events")
+                .setTitle("Upcoming Events")
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
@@ -195,6 +199,7 @@ public class MapActivity extends ActionBarActivity {
                     //success
                     events.clear();
                     myEvents.clear();
+                    upcomingEvents.clear();
                     for (Event event : list) {
                         events.add(event);
                     }
@@ -203,10 +208,20 @@ public class MapActivity extends ActionBarActivity {
                             if (event.getAuthor().equals(user.getUserId())) {
                                 myEvents.add(event);
                             }
-                            if (event.getLat().length() > 3 && event.getLng().length() > 3) {
-                                map.addMarker(new MarkerOptions().position(
-                                        new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
-                                ).title(event.getName()).snippet(event.getDescription()));
+
+                            try {
+                                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                Date date = formatter.parse(event.getDate());
+                                Date thisDate = Calendar.getInstance().getTime();
+                                if (!date.before(thisDate)) {
+                                    if (event.getLat().length() > 3 && event.getLng().length() > 3) {
+                                        upcomingEvents.add(event);
+                                        addMarker(event);
+                                    }
+                                }
+                            } catch (Exception ex) {
+                                Log.w("submit================", ex.toString());
+                                Log.w("submit================", event.getDate().toString());
                             }
                         }
                     }
@@ -219,27 +234,65 @@ public class MapActivity extends ActionBarActivity {
 
     };
 
-//    public void  loadMyEvents() {
-//        myEvents.clear();
-//        // Get the Mobile Service Table instance to use
-//        eTable = client.getTable(Event.class);
-//        eTable.execute(new TableQueryCallback<Event>() {
-//            @Override
-//            public void onCompleted(List<Event> list, int i, Exception e, ServiceFilterResponse serviceFilterResponse) {
-//                if (e == null) {
-//                    //success
-//                    for (Event event : list) {
-//                        if (event.getAuthor().equals(user.getUserId())) {
-//                            myEvents.add(event);
-//                        }
-//                    }
-//                } else {
-//                    //failure
-//                    Toast.makeText(MapActivity.this, "fail-" + e.getCause(), Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-//    };
+    public void addMarker(Event event) {
+        final String category = event.getCategory().toLowerCase().trim();
+        Log.w("category======", category);
+        if(category.equals("athletics")) {
+            map.addMarker(new MarkerOptions().position(
+                new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                    .title(event.getName()).snippet(event.getDescription())
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.sport))
+            );
+        } else if(category.equals("academics")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.book))
+            );
+        } else if(category.equals("social")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.network))
+            );
+        }else if(category.equals("night-life")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.moon))
+            );
+        }else if(category.equals("gaming")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.game))
+            );
+        }else if(category.equals("entertainment")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.tele))
+            );
+        }else if(category.equals("activism")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.mega))
+            );
+        }else if(category.equals("party")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.balloon))
+            );
+        }else if(category.equals("other")){
+            map.addMarker(new MarkerOptions().position(
+                            new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng())))
+                            .title(event.getName()).snippet(event.getDescription())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ban))
+            );
+        }
+    }
 
     //Creates a alert dialog with the form elements for creating a new event
     public void alertFormElements() {
@@ -297,7 +350,7 @@ public class MapActivity extends ActionBarActivity {
                         Event event = new Event();
                         event.setName(nameEditText.getText().toString().trim());
                         event.setAuthor(user.getUserId().trim());
-                        event.setCategory(categorySpinner.toString());
+                        event.setCategory(categorySpinner.getSelectedItem().toString());
 //                        event.date = eventDate.getText().toString().trim();
 //                        event.time = eventTime.getText().toString().trim();
                         event.setDate(eventCalendar.getMonth() + "/" + eventCalendar.getDayOfMonth() + "/" + eventCalendar.getYear());
@@ -313,6 +366,7 @@ public class MapActivity extends ActionBarActivity {
                                     public void onCompleted(Event event, Exception e1, ServiceFilterResponse serviceFilterResponse) {
                                         if (e1 == null) {
                                             //success
+                                            loadEvents();
                                         } else {
                                             //failure
                                             Toast.makeText(MapActivity.this, "failed to save event -" + e1.getCause(), Toast.LENGTH_LONG).show();
