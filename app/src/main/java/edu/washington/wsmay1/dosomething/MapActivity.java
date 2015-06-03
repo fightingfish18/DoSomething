@@ -15,21 +15,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CalendarView;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
-
+import android.view.*;
+import android.widget.*;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -48,9 +35,8 @@ import com.microsoft.windowsazure.mobileservices.TableOperationCallback;
 import com.microsoft.windowsazure.mobileservices.TableQueryCallback;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class MapActivity extends ActionBarActivity {
@@ -134,6 +120,38 @@ public class MapActivity extends ActionBarActivity {
             LatLng coordinates = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 13));
         }
+        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            // Defines the contents of the InfoWindow
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                // Getting view from the layout file info_window_layout
+                View v = getLayoutInflater().inflate(R.layout.info_window, null);
+
+                // Getting reference to the TextView to set title
+                TextView title = (TextView) v.findViewById(R.id.title);
+                title.setText(marker.getTitle());
+                String[] items = marker.getSnippet().split(Pattern.quote("|"));
+                TextView desc = (TextView) v.findViewById(R.id.description);
+                desc.setText(items[0]);
+                TextView date = (TextView) v.findViewById(R.id.date);
+                date.setText(items[2]);
+                TextView author = (TextView) v.findViewById(R.id.author);
+                author.setText(items[1]);
+
+                // Returning the view containing InfoWindow contents
+                return v;
+
+            }
+
+        });
         loadEvents(); //Gets events from backend and adds them to events list
         long time = 5;
         float distance = 10;
@@ -206,7 +224,7 @@ public class MapActivity extends ActionBarActivity {
                             if (event.getLat().length() > 3 && event.getLng().length() > 3) {
                                 map.addMarker(new MarkerOptions().position(
                                         new LatLng(Double.parseDouble(event.getLat()), Double.parseDouble(event.getLng()))
-                                ).title(event.getName()).snippet(event.getDescription()));
+                                ).title(event.getName()).snippet(event.getDescription() + "|" + "Hosted By: " + event.getHost() + "|" + "Date: " + event.getDate()));
                             }
                         }
                     }
@@ -267,6 +285,7 @@ public class MapActivity extends ActionBarActivity {
                 .findViewById((R.id.event_calender));
         final TimePicker eventTime = (TimePicker) formElementsView
                 .findViewById(R.id.event_time);
+        final EditText hostName = (EditText) formElementsView.findViewById(R.id.hostName);
 
 
         final Button pickerButton = (Button) formElementsView
@@ -305,6 +324,7 @@ public class MapActivity extends ActionBarActivity {
                         event.setDescription(eventDescription.getText().toString().trim());
                         event.setLat(eventLat.getText().toString().trim());
                         event.setLng(eventLng.getText().toString().trim());
+                        event.setHost(hostName.getText().toString().trim());
 
                         if (!event.getName().isEmpty()) {
                             if (-90 <= Double.parseDouble(event.getLat()) && Double.parseDouble(event.getLat()) <= 90 && -180 <= Double.parseDouble(event.getLng()) && Double.parseDouble(event.getLng()) <= 180) {

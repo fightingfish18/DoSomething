@@ -92,5 +92,16 @@
         android:layout_below="@+id/category_spinner"
         android:layout_centerHorizontal="true" />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/hostName"
+        android:hint="Host..."
+        android:layout_below="@+id/eventLat"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
 </ScrollView>
