@@ -10,10 +10,10 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:dividerHeight="1dp"
-        android:divider="#ff3d2e"
+        android:divider="#daeaef"
         android:background="#ffffff"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
         android:drawSelectorOnTop="true">
     </ListView>
 

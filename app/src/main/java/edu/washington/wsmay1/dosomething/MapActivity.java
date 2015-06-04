@@ -206,9 +206,12 @@ public class MapActivity extends ActionBarActivity {
 
 
         // create a new ListView, set the adapter and item click listener
-        listViewEvent.setOnItemClickListener(new OnItemClickListenerListViewItem());
+        listViewEvent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
+            }
+        });
     }
 
 

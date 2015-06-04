@@ -4,22 +4,9 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#272f32"
-    tools:actionBarNavMode="list"
-    android:id="@+id/">
-    <TextView
-        android:text="Do Something!"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_height="118.1dp"
-        android:id="@+id/textView1"
-        android:gravity="left"
-        android:textScaleX="1"
-        android:textColor="#ffdaeaef"
-        android:layout_width="276.1dp"
-        android:textSize="@android:dimen/app_icon_size"
-        android:textStyle="bold"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+    android:background="#262e30"
+    tools:actionBarNavMode="list">
+
     <Button
         android:text="Login with facebook"
         android:layout_height="wrap_content"
@@ -31,4 +18,12 @@
         android:layout_marginBottom="72dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/ds"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/LoginButton" />
 </RelativeLayout>
