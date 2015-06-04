@@ -55,11 +55,11 @@ public class MapActivity extends ActionBarActivity {
     private Location current;
     private MobileServiceClient client;
     private MobileServiceUser user;
-    private NewApp myApp;
+    public static NewApp myApp;
 
     //Used for event form
     private EventAdapter eventAdapter;
-    private ArrayList<Event> events = new ArrayList<Event>();
+    public static ArrayList<Event> events = new ArrayList<Event>();
     private ArrayList<Event> myEvents = new ArrayList<Event>();
     private ArrayList<Event> upcomingEvents = new ArrayList<Event>();
     private MobileServiceTable<Event> eTable;
@@ -166,7 +166,7 @@ public class MapActivity extends ActionBarActivity {
         //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, this.mLocationListener);
         //mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, distance, mLocationListener);
 
-    }
+    };
 
     private final LocationListener mLocationListener = new LocationListener() {
         @Override
@@ -196,7 +196,6 @@ public class MapActivity extends ActionBarActivity {
                 new EventAdapter(MapActivity.this,0,upcomingEvents);
         listViewEvent.setAdapter(arrayAdapter);
 
-
         AlertDialog ok = new AlertDialog.Builder(MapActivity.this).setView(loadElementsView)
                 .setTitle("Upcoming Events")
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
@@ -204,6 +203,10 @@ public class MapActivity extends ActionBarActivity {
                         dialog.cancel();
                     }
                 }).show();
+
+
+        // create a new ListView, set the adapter and item click listener
+        listViewEvent.setOnItemClickListener(new OnItemClickListenerListViewItem());
 
 
     }

@@ -6,7 +6,9 @@ package edu.washington.wsmay1.dosomething;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +83,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
             final String category = events.get(position).getCategory().toLowerCase().trim();
 
             holder.display_name.setText(events.get(position).getName());
+            holder.display_name.setTag(events.get(position).getId());
             holder.display_number.setText(events.get(position).getDate());
             holder.display_time.setText(events.get(position).getTime()+" on ");
 
@@ -102,7 +105,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
                 holder.display_image.setImageResource(R.drawable.balloon);
             } else if (category.equals("other")) {
                 holder.display_image.setImageResource(R.drawable.rsz_ban );
-            }
+            };
 
 
         } catch (Exception e) {
