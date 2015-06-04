@@ -5,7 +5,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="#272f32">
 
 
     <EditText
@@ -14,7 +15,11 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Event Name..."
-        android:layout_marginTop="50dp" />
+        android:layout_marginTop="50dp"
+        android:textColorHint="#9dbdc6"
+        android:paddingBottom="10dp"
+        android:textSize="16pt"
+        android:textIsSelectable="false" />
 
     <Spinner
         android:layout_width="wrap_content"
@@ -37,7 +42,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/event_time" />
+        android:layout_below="@+id/event_time"
+        android:textColor="#ffffff"
+        android:textColorHint="#9dbdc6" />
 
 
     <TimePicker
@@ -45,14 +52,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/event_calender"
         android:layout_centerHorizontal="true"
-        android:id="@+id/event_time" />
+        android:id="@+id/event_time"
+        android:background="#272f32"
+        android:headerBackground="#9dbdc6" />
 
     <DatePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/event_calender"
         android:layout_below="@+id/category_spinner"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:headerBackground="#9dbdc6" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -63,7 +73,11 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/eventDescription" />
+        android:layout_below="@+id/eventDescription"
+        android:backgroundTint="#272f32"
+        android:textColor="#ffffff"
+        android:textColorHint="#9dbdc6"
+        android:singleLine="false" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -74,7 +88,10 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="#ffffff"
+        android:textColorHint="#9dbdc6"
+        android:paddingBottom="10dp" />
 
 </RelativeLayout>
 </ScrollView>

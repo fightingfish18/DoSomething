@@ -24,17 +24,23 @@
         android:layout_height="wrap_content"
         android:text="New Event"
         android:id="@+id/newEvent"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="69dp" />
+        android:width="120dp"
+        android:layout_above="@+id/loadEvents"
+        android:layout_alignLeft="@+id/loadEvents"
+        android:layout_alignStart="@+id/loadEvents"
+        android:layout_marginTop="10dp"
+        android:background="#9dbdc6" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View Events"
         android:id="@+id/loadEvents"
+        android:width="120dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:background="#9dbdc6" />
 
 </RelativeLayout>
